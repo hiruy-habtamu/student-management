@@ -1,0 +1,75 @@
+openapi: 3.0.3
+info:
+  title: Student database
+  version: 1.0.0
+  description: Your project description
+paths:
+  /api/students/:
+    get:
+      operationId: api_students_list
+      parameters:
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentList'
+          description: ''
+components:
+  schemas:
+    StudentList:
+      type: object
+      properties:
+        admission_number:
+          type: integer
+          readOnly: true
+          nullable: true
+        university_id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+        middle_name:
+          type: string
+          readOnly: true
+        last_name:
+          type: string
+          readOnly: true
+          nullable: true
+        batch:
+          type: integer
+          readOnly: true
+        dorm:
+          type: integer
+          readOnly: true
+      required:
+      - admission_number
+      - batch
+      - dorm
+      - first_name
+      - last_name
+      - middle_name
+      - university_id
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

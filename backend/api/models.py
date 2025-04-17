@@ -1,17 +1,24 @@
 from django.db import models
 class Batch(models.Model):
     year = models.PositiveSmallIntegerField()
+    
+    def __str__(self):
+        return f"{self.year} Batch"
+
 
 class Dorm(models.Model):
     building = models.PositiveSmallIntegerField()
     floor = models.PositiveSmallIntegerField()
     dorm = models.PositiveSmallIntegerField()
 
+    def __str__(self):
+        return f"Block {self.building}, {self.dorm}"
+
 class Student(models.Model):
 
     SEX_CHOICES = {
         "F" : "Female",
-        "M" : "MALE"
+        "M" : "Male"
     }
 
     admission_number = models.PositiveIntegerField(null=True)
@@ -26,6 +33,9 @@ class Student(models.Model):
     dorm = models.ForeignKey(Dorm,on_delete=models.PROTECT)
     image = models.ImageField(upload_to='students/images/',null=True,blank=True)
     matric_pdf = models.FileField(upload_to='students/pdfs',null=True,blank=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
 
     #To not reproduce the same email
     def generate_unique_email(self):
