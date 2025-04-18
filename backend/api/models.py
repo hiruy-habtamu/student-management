@@ -9,7 +9,7 @@ class Batch(models.Model):
 class Dorm(models.Model):
     building = models.PositiveSmallIntegerField()
     floor = models.PositiveSmallIntegerField()
-    dorm = models.PositiveSmallIntegerField()
+    room = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return f"Block {self.building}, {self.dorm}"

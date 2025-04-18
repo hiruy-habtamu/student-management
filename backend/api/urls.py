@@ -9,5 +9,5 @@ urlpatterns = [
     path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     
     path('students/',StudentListAPIView.as_view()),
-    path('students/<int:pk>',StudentDetailAPIView.as_view(),name="student-detail")
+    path('students/<int:university_id>/<int:batch>',StudentDetailAPIView.as_view(),name="student-detail")
 ]
