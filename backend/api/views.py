@@ -1,6 +1,6 @@
 from rest_framework import filters
-from rest_framework.generics import ListAPIView
-from .serializers import StudentListSerializer
+from rest_framework.generics import ListAPIView,RetrieveAPIView
+from .serializers import StudentListSerializer,StudentDetailSerializer
 from .models import Student
 
 class StudentListAPIView(ListAPIView):
@@ -12,3 +12,8 @@ class StudentListAPIView(ListAPIView):
     ordering_fields = ['admission_number', 'university_id']
     #Default ordering Scheme
     ordering = ['admission_number']
+
+class StudentDetailAPIView(RetrieveAPIView):
+    queryset = Student.objects.all()
+    serializer_class = StudentDetailSerializer
+
