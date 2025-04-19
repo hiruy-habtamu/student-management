@@ -2,7 +2,13 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 class User(AbstractUser):
-    pass
+    # Make email as a default login method
+    USERNAME_FIELD = 'email'
+    # Should remove email from REQUIRED_FIELDS cuz IDK why
+    REQUIRED_FIELDS = []
+    # It asks me to make User.email a unique field cuz it is named as USERNAME_FIELD
+    email = models.EmailField(unique=True)
+
 class Batch(models.Model):
     year = models.PositiveSmallIntegerField()
     
@@ -42,12 +48,11 @@ class Student(models.Model):
 
     #To not reproduce the same email and generate email automatically
     def default_email(self):
-        base_email = f"{self.first_name.lower()}{self.last_name.lower()}@aastu.edu.et"
-        email = base_email
+        email = f"{self.first_name.lower()}.{self.last_name.lower()}@aastustudent.edu.et"
         counter = 1
 
         while Student.objects.filter(email=email).exists():
-            email = f"{self.first_name.lower()}.{self.last_name.lower()}{counter}@aastu.edu.et"
+            email = f"{self.first_name.lower()}.{self.last_name.lower()}{counter}@aastustudent.edu.et"
             counter += 1
 
         return email
