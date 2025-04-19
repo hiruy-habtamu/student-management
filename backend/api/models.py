@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+class User(AbstractUser):
+    pass
 class Batch(models.Model):
     year = models.PositiveSmallIntegerField()
     
@@ -12,7 +16,7 @@ class Dorm(models.Model):
     room = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return f"Block {self.building}, {self.dorm}"
+        return f"Block {self.building}, {self.room}"
 
 class Student(models.Model):
 
@@ -20,14 +24,13 @@ class Student(models.Model):
         "F" : "Female",
         "M" : "Male"
     }
-
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     admission_number = models.PositiveIntegerField(null=True)
     university_id = models.PositiveBigIntegerField(primary_key=True)
     first_name = models.CharField(max_length=35)
     middle_name = models.CharField(max_length=35)
     last_name = models.CharField(max_length=35,null=True)
     sex = models.CharField(max_length=1,choices=SEX_CHOICES)
-    email = models.EmailField(unique=True)
     section = models.CharField(max_length=3,null=True)
     batch = models.ForeignKey(Batch,on_delete=models.PROTECT)
     dorm = models.ForeignKey(Dorm,on_delete=models.PROTECT)
@@ -37,19 +40,31 @@ class Student(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-    #To not reproduce the same email
-    def generate_unique_email(self):
+    #To not reproduce the same email and generate email automatically
+    def default_email(self):
         base_email = f"{self.first_name.lower()}{self.last_name.lower()}@aastu.edu.et"
         email = base_email
         counter = 1
 
         while Student.objects.filter(email=email).exists():
-            email = f"{self.first_name.lower()}{self.last_name.lower()}{counter}@aastu.edu.et"
+            email = f"{self.first_name.lower()}.{self.last_name.lower()}{counter}@aastu.edu.et"
             counter += 1
 
         return email
-
+    
+    email = models.EmailField(unique=True,blank=True)
+    
     def save(self, *args, **kwargs):
         if not self.email:
-            self.email = self.generate_unique_email()
+            self.email = self.default_email()
+        # Need to create an api_user that is non-admin user for authentication purposes
+        if not self.user:
+            # Only create the user if it doesn't already exist
+            user = User.objects.create_user(
+                username=f'{self.first_name}.{self.last_name}.{self.university_id}',
+                email=self.email,
+                password='12345678'
+            )
+            user.save()
+            self.user = user
         super().save(*args, **kwargs)
